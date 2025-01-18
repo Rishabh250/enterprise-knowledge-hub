@@ -105,8 +105,7 @@ Response format:
     "response": "Answer from the system",
     "sources": [
         {
-            "source": "document_name.pdf",
-            "page": 1
+            "source": "document_name.pdf"
         }
     ]
 }
