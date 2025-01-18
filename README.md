@@ -21,7 +21,7 @@ A powerful Retrieval-Augmented Generation (RAG) system for enterprise knowledge 
 
 1. Clone the repository:
 ```bash
-git clone <repository-url>
+git clone https://github.com/Rishabh250/enterprise-knowledge-hub.git
 cd enterprise-knowledge-hub
 ```
 
