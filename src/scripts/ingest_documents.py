@@ -1,18 +1,30 @@
 import os
+import sys
 import argparse
 from pathlib import Path
+
+# Add project root to Python path
+project_root = str(Path(__file__).parent.parent.parent)
+sys.path.append(project_root)
+
 from src.ingestion.document_loader import DocumentLoader
 from src.vectorstore.vector_store import VectorStoreManager
 from dotenv import load_dotenv
 
-def ingest_documents(docs_dir: str, vectorstore_path: str):
+def ingest_documents(docs_dir: str):
     """
     Ingest documents from a directory and create a vector store
     
     Args:
         docs_dir: Directory containing documents to ingest
-        vectorstore_path: Path where to save the vector store
     """
+    load_dotenv()
+    
+    # Get vectorstore path from environment
+    vectorstore_path = os.getenv("VECTORSTORE_PATH")
+    if not vectorstore_path:
+        raise ValueError("VECTORSTORE_PATH not set in .env file")
+
     # Initialize document loader and vector store manager
     loader = DocumentLoader()
     vector_store_manager = VectorStoreManager()
@@ -37,26 +49,8 @@ def ingest_documents(docs_dir: str, vectorstore_path: str):
         print("No documents were processed successfully")
 
 if __name__ == "__main__":
-    parser = argparse.ArgumentParser(description="Ingest documents into vector store")
-    parser.add_argument(
-        "--docs-dir",
-        type=str,
-        required=True,
-        help="Directory containing documents to ingest"
-    )
-    parser.add_argument(
-        "--vectorstore-path",
-        type=str,
-        help="Path where to save the vector store"
-    )
-    
+    parser = argparse.ArgumentParser(description="Ingest documents into the vector store")
+    parser.add_argument("--docs-dir", required=True, help="Directory containing documents to ingest")
     args = parser.parse_args()
-    load_dotenv()
     
-    # Use provided vectorstore path or get from environment
-    vectorstore_path = args.vectorstore_path or os.getenv("VECTORSTORE_PATH")
-    
-    # Create vectorstore directory if it doesn't exist
-    Path(vectorstore_path).parent.mkdir(parents=True, exist_ok=True)
-    
-    ingest_documents(args.docs_dir, vectorstore_path) 
+    ingest_documents(args.docs_dir) 

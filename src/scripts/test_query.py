@@ -1,7 +1,14 @@
 import os
-from dotenv import load_dotenv
+import sys
+from pathlib import Path
+
+# Add project root to Python path
+project_root = str(Path(__file__).parent.parent.parent)
+sys.path.append(project_root)
+
 from src.rag.rag_pipeline import RAGPipeline
 from src.vectorstore.vector_store import VectorStoreManager
+from dotenv import load_dotenv
 
 def test_query(query: str):
     """Test the RAG pipeline with a query"""
