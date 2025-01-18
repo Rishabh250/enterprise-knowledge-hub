@@ -34,10 +34,16 @@ app.include_router(drive_router, prefix="/api/v1", tags=["Google Drive"])
 # Cache expensive model initializations
 @lru_cache()
 def get_llm():
+    '''
+    This is the LLM model used for the query.
+    '''
     return OllamaLLM(model=os.getenv("MODEL"))
 
 @lru_cache()
 def get_embeddings():
+    '''
+    This is the embedding model used for the vector store.
+    '''
     return HuggingFaceEmbeddings(model_name="sentence-transformers/all-MiniLM-L6-v2")
 
 # Define prompt template as a constant
@@ -59,14 +65,23 @@ QA_PROMPT = PromptTemplate(
 )
 
 class QueryRequest(BaseModel):
+    '''
+    This is the request body for the query.
+    '''
     query: str
 
 @app.get("/")
 async def root():
+    '''
+    This is the root endpoint for the API.
+    '''
     return {"message": "Welcome to Enterprise Knowledge Hub API"}
 
 @lru_cache()
 def get_vectorstore():
+    '''
+    This is the vector store used for the query.
+    '''
     return FAISS.load_local(
         os.getenv("VECTORSTORE_PATH"),
         get_embeddings(),
@@ -75,6 +90,9 @@ def get_vectorstore():
 
 @lru_cache()
 def get_qa_chain():
+    '''
+    This is the query chain used for the query.
+    '''
     vectorstore = get_vectorstore()
     retriever = vectorstore.as_retriever(
         search_type="similarity",
@@ -93,9 +111,12 @@ def get_qa_chain():
 
 @app.post("/query")
 async def process_query(query_body: QueryRequest):
+    '''
+    This is the endpoint for the query.
+    '''
     try:
         qa_chain = get_qa_chain()
-        
+
         result = qa_chain({"query": query_body.query})
         return {
             "response": result["result"],
@@ -106,5 +127,8 @@ async def process_query(query_body: QueryRequest):
         raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
+    '''
+    This is the main function for the API.
+    '''
     import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)
