@@ -11,7 +11,6 @@ from src.ingestion.google_drive import GoogleDriveLoader
 from src.ingestion.document_loader import DocumentLoader
 from src.vectorstore.vector_store import VectorStoreManager
 from src.models.tracking import IngestionTracker, DocumentTrack
-from src.api.api_docs import get_api_documentation, get_route_details
 
 # Load environment variables
 load_dotenv()
@@ -113,57 +112,3 @@ async def ingest_drive_files(request: DriveFileRequest = Body(...)) -> DriveInge
         message="Successfully processed %d files" % len(processed_files),
         files_processed=processed_files
     )
-
-@router.get("/tracking/status")
-async def get_tracking_status():
-    """Get document processing status summary"""
-    try:
-        history = tracker.get_history()
-        vectorized = tracker.get_vectorized_files()
-        failed = tracker.get_failed_files()
-        
-        return {
-            "status": "success",
-            "total_files": len(history),
-            "vectorized_files": len(vectorized),
-            "failed_files": len(failed),
-            "vectorized_paths": vectorized,
-            "failed_paths": failed
-        }
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
-
-@router.get("/docs/api")
-async def get_api_docs():
-    """Get complete API documentation with examples"""
-    try:
-        documentation = get_api_documentation()
-        return documentation
-    except Exception as e:
-        logger.error("Error generating API documentation: %s", str(e))
-        raise HTTPException(status_code=500, detail="Failed to generate API documentation")
-
-@router.get("/docs/api/{route_name}")
-async def get_route_docs(route_name: str):
-    """Get documentation for a specific route"""
-    try:
-        return get_route_details(route_name)
-    except ValueError as e:
-        raise HTTPException(status_code=404, detail=str(e))
-
-@router.post("/ingest/drive/files/force", response_model=DriveIngestionResponse)
-async def force_ingest_drive_files(request: DriveFileRequest = Body(...)) -> DriveIngestionResponse:
-    """
-    Force re-ingestion of files from Google Drive, even if already vectorized
-    """
-    try:
-        # Clear vectorization status for the folder
-        history = tracker.get_history()
-        for track in history:
-            if track.file_id == request.folder_id:
-                tracker.update_vectorization_status(track.file_path, success=False)
-        
-        # Process files normally
-        return await ingest_drive_files(request)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e)) 
