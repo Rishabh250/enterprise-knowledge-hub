@@ -121,7 +121,7 @@ POST /api/v1/ingest/drive/files
 Content-Type: application/json
 
 {
-    "file_ids": ["file_id1", "file_id2"]
+    "folder_id": "folder_id"
 }
 ```
 
@@ -218,18 +218,5 @@ To use Google Drive integration:
 3. Share your Google Drive folders/files:
    - Share the folders or files you want to access with the service account email
    - The email will look like: `service-account-name@project-id.iam.gserviceaccount.com`
-
-Example usage with Google Drive:
-
-```bash
-# Ingest files from Google Drive (using file IDs)
-python src/scripts/ingest_documents.py --drive-files "file_id1" "file_id2"
-
-# Ingest from both local directory and Google Drive
-python src/scripts/ingest_documents.py --docs-dir data/documents --drive-files "file_id1" "file_id2"
-
-# Ingest all files from a Google Drive folder
-python src/scripts/ingest_documents.py --drive-folder "folder_id"
-```
 
 The Google Drive integration supports the same file types as local ingestion.
