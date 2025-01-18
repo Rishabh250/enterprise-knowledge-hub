@@ -37,3 +37,11 @@ data/
 logs/
 Pipfile.lock
 Pipfile
+
+# Keys and credentials
+keys/
+*.json
+token.pickle
+
+# Downloaded files
+data/documents/drive/

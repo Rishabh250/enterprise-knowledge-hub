@@ -13,9 +13,12 @@ def setup_directories():
     
     # Create directories
     directories = [
-        "data/documents",  # For storing input documents
-        vectorstore_path,  # For storing FAISS index
-        "logs"            # For logging
+        "data/documents",         # For storing input documents
+        "data/documents/drive",   # For storing Google Drive downloads
+        vectorstore_path,         # For storing FAISS index
+        "logs",                   # For logging
+        "keys",                   # For storing credentials
+        "data/tracking"           # For tracking logs
     ]
     
     for dir_path in directories:

@@ -1,4 +1,3 @@
-
 # Enterprise Knowledge Hub
 
 A powerful Retrieval-Augmented Generation (RAG) system for enterprise knowledge management, built with LangChain, FastAPI, and FAISS vector store.
@@ -113,6 +112,53 @@ Response format:
 }
 ```
 
+### Google Drive Integration
+
+#### Ingest Files from Drive
+
+```bash
+POST /api/v1/ingest/drive/files
+Content-Type: application/json
+
+{
+    "file_ids": ["file_id1", "file_id2"]
+}
+```
+
+Response:
+```json
+{
+    "status": "success",
+    "message": "Successfully processed 2 files",
+    "files_processed": [
+        "data/documents/drive/document1.pdf",
+        "data/documents/drive/document2.docx"
+    ]
+}
+```
+
+#### Ingest Folder from Drive
+
+```bash
+POST /api/v1/ingest/drive/folder/{folder_id}?recursive=true
+```
+
+Query Parameters:
+- `recursive`: Whether to process subfolders (default: true)
+
+Response:
+```json
+{
+    "status": "success",
+    "message": "Successfully processed 5 files",
+    "files_processed": [
+        "data/documents/drive/doc1.pdf",
+        "data/documents/drive/subfolder/doc2.docx",
+        "data/documents/drive/subfolder/doc3.txt"
+    ]
+}
+```
+
 ## Supported Document Types
 
 - PDF (`.pdf`)
@@ -152,3 +198,38 @@ This project is open-sourced under the MIT License - see the LICENSE file for de
 ---
 
 This README provides a comprehensive overview of the project. Feel free to customize and extend it as needed for your specific use case.
+
+### Google Drive Integration
+
+To use Google Drive integration:
+
+1. Create a Google Cloud Project:
+   - Go to [Google Cloud Console](https://console.cloud.google.com/)
+   - Create a new project or select an existing one
+   - Enable the Google Drive API
+
+2. Create a Service Account:
+   - Go to "IAM & Admin" > "Service Accounts"
+   - Click "Create Service Account"
+   - Fill in the details and create the account
+   - Create a new key (JSON type) and download it
+   - Save the JSON file as `keys/service-account.json` in your project
+
+3. Share your Google Drive folders/files:
+   - Share the folders or files you want to access with the service account email
+   - The email will look like: `service-account-name@project-id.iam.gserviceaccount.com`
+
+Example usage with Google Drive:
+
+```bash
+# Ingest files from Google Drive (using file IDs)
+python src/scripts/ingest_documents.py --drive-files "file_id1" "file_id2"
+
+# Ingest from both local directory and Google Drive
+python src/scripts/ingest_documents.py --docs-dir data/documents --drive-files "file_id1" "file_id2"
+
+# Ingest all files from a Google Drive folder
+python src/scripts/ingest_documents.py --drive-folder "folder_id"
+```
+
+The Google Drive integration supports the same file types as local ingestion.

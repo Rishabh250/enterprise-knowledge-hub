@@ -1,18 +1,36 @@
 import os
 from dotenv import load_dotenv
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from langchain_ollama.llms import OllamaLLM
 from langchain.embeddings import HuggingFaceEmbeddings
 from langchain.vectorstores import FAISS
 from langchain.chains.retrieval_qa.base import RetrievalQA
 from langchain.prompts import PromptTemplate
-import uvicorn
-
-# Initialize FastAPI app
-app = FastAPI(title="Knowledge Hub API")
+from pydantic import BaseModel
+from src.api.drive_routes import router as drive_router
 
 # Load environment variables
 load_dotenv()
+
+# Initialize FastAPI app
+app = FastAPI(
+    title="Enterprise Knowledge Hub",
+    description="API for document ingestion and querying using RAG",
+    version="1.0.0"
+)
+
+# Add CORS middleware
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Adjust in production
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+# Include routers
+app.include_router(drive_router, prefix="/api/v1", tags=["Google Drive"])
 
 # Initialize models and embeddings
 llm_model = OllamaLLM(model=os.getenv("MODEL"))
@@ -30,17 +48,16 @@ Question: {question}
 
 Helpful Answer: Let me help you with that."""
 
+class QueryRequest(BaseModel):
+    query: str
+
 @app.get("/")
 async def root():
-    return {"message": "Knowledge Hub API is running"}
+    return {"message": "Welcome to Enterprise Knowledge Hub API"}
 
 @app.post("/query")
-async def process_query(query_body: dict):
+async def process_query(query_body: QueryRequest):
     try:
-        query = query_body.get("query")
-        if not query:
-            return {"error": "No query provided in request body"}
-
         vectorstore = FAISS.load_local(
             os.getenv("VECTORSTORE_PATH"), 
             embeddings,
@@ -70,14 +87,15 @@ async def process_query(query_body: dict):
         )
         
         # Get response
-        result = qa_chain({"query": query})
+        result = qa_chain({"query": query_body.query})
         return {
             "response": result["result"],
             "sources": [doc.metadata for doc in result["source_documents"]]
         }
 
     except Exception as e:
-        return {"error": str(e)}
+        raise HTTPException(status_code=500, detail=str(e))
 
 if __name__ == "__main__":
+    import uvicorn
     uvicorn.run(app, host="0.0.0.0", port=8000)

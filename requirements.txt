@@ -1,5 +1,5 @@
-fastapi
-uvicorn
+fastapi>=0.68.0
+uvicorn>=0.15.0
 python-dotenv
 langchain
 langchain-core
@@ -7,7 +7,7 @@ langchain-ollama
 faiss-cpu
 sentence-transformers
 unstructured
-python-multipart
+python-multipart>=0.0.5
 pypdf
 pandas
 openpyxl
@@ -16,3 +16,6 @@ langchain-community
 docx2txt
 python-docx
 langchain_ollama
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
