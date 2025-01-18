@@ -12,6 +12,7 @@ from langchain.text_splitter import RecursiveCharacterTextSplitter
 from .google_drive import GoogleDriveLoader
 
 class DocumentLoader:
+    """Class for loading and splitting documents"""
     def __init__(self, google_drive_credentials: str = None):
         """
         Initialize document loader
@@ -24,7 +25,7 @@ class DocumentLoader:
             chunk_overlap=200
         )
         self._init_google_drive(google_drive_credentials)
-    
+
     def _init_google_drive(self, credentials_path: Optional[str] = None) -> None:
         """Initialize Google Drive loader if credentials are available"""
         try:
@@ -33,8 +34,8 @@ class DocumentLoader:
         except FileNotFoundError:
             print("Google Drive integration not configured. Skipping initialization.")
             self.google_drive_enabled = False
-        except Exception as e:
-            print("Error initializing Google Drive: %s" % str(e))
+        except (IOError, OSError) as e:
+            print(f"Error initializing Google Drive: {str(e)}")
             self.google_drive_enabled = False
 
     def load_document(self, file_path: str, is_google_drive: bool = False) -> List:
@@ -50,8 +51,8 @@ class DocumentLoader:
                 raise ValueError("Google Drive integration is not configured")
             try:
                 file_path = self.google_drive_loader.download_file(file_path)
-            except Exception as e:
-                raise Exception("Error downloading from Google Drive: %s" % str(e))
+            except (IOError, OSError) as e:
+                raise IOError(f"Error downloading from Google Drive: {str(e)}") from e
 
         file_extension = os.path.splitext(file_path)[1].lower()
 
@@ -66,10 +67,10 @@ class DocumentLoader:
         elif file_extension == '.docx':
             try:
                 loader = Docx2txtLoader(file_path)
-            except Exception:
+            except (ImportError, IOError):
                 loader = UnstructuredWordDocumentLoader(file_path)
         else:
-            raise ValueError("Unsupported file type: %s" % file_extension)
+            raise ValueError(f"Unsupported file type: {file_extension}")
 
         documents = loader.load()
-        return self.text_splitter.split_documents(documents) 
+        return self.text_splitter.split_documents(documents)

@@ -1,12 +1,14 @@
-import os
+# Standard library imports
 import io
+import logging
+import os
+from functools import lru_cache
 from pathlib import Path
-from typing import List, Dict, Optional
+from typing import Dict, List, Optional
+
 from google.oauth2 import service_account
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaIoBaseDownload
-import logging
-from functools import lru_cache
 
 from dotenv import load_dotenv
 
@@ -129,17 +131,16 @@ class GoogleDriveLoader:
                 status, done = downloader.next_chunk()
                 logger.info("Download %d%% completed", int(status.progress() * 100))
 
-            # Save file
             save_path = save_path or self._get_unique_path(os.path.join(self.DOWNLOAD_DIR, file_name))
             Path(save_path).parent.mkdir(parents=True, exist_ok=True)
-            
+
             with open(save_path, 'wb') as f:
                 f.write(file_handle.getvalue())
 
             logger.info("Saved file to: %s", save_path)
             return save_path
 
-        except Exception as e:
+        except (Exception) as e:
             raise Exception(f"Error downloading file from Google Drive: {str(e)}")
 
     def list_files_in_folder(self, folder_id: str) -> List[Dict[str, str]]:
