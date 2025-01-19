@@ -5,7 +5,7 @@ from typing import List, Optional
 
 from dotenv import load_dotenv
 from langchain.docstore.document import Document
-from langchain.embeddings import HuggingFaceEmbeddings
+from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 
 load_dotenv()

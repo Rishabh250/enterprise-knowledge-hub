@@ -77,7 +77,7 @@ python src/scripts/ingest_documents.py --docs-dir data/documents
 To test the RAG pipeline directly:
 
 ```bash
-python src/scripts/test_query.py
+python src/scripts/test_query.py --query "Your question here" --language "en"
 ```
 
 ### 4. Run the API Server

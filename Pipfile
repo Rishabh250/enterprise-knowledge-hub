@@ -19,6 +19,7 @@ pypdf = "*"
 pandas = "*"
 openpyxl = "*"
 langchain-huggingface = "*"
+beautifulsoup4 = "*"
 
 [dev-packages]
 

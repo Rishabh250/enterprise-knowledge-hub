@@ -35,7 +35,7 @@ async def process_single_file(file_id: str, file_name: str, drive_loader: Google
                             doc_loader: DocumentLoader) -> tuple[List, str]:
     """Process a single file and return its documents and downloaded path"""
     downloaded_path = drive_loader.download_single_file(file_id)
-    
+
     tracker.track(DocumentTrack(
         file_path=downloaded_path,
         file_id=file_id,
@@ -45,7 +45,7 @@ async def process_single_file(file_id: str, file_name: str, drive_loader: Google
 
     docs = doc_loader.load_document(downloaded_path)
     tracker.update_vectorization_status(downloaded_path, success=True)
-    
+
     return docs, downloaded_path
 
 @router.post("/ingest/drive/files", response_model=DriveIngestionResponse)
