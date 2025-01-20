@@ -1,5 +1,5 @@
 """Constants for the project"""
-
+from typing import Dict
 APP_CONFIG = {
     "title": "Enterprise Knowledge Hub",
     "description": "API for document ingestion and querying using RAG",
@@ -14,6 +14,15 @@ CORS_CONFIG = {
     "allow_methods": ["*"],
     "allow_headers": ["*"]
 }
+
+LANGUAGE_MAP: Dict[str, str] = {
+    "en": "English", "es": "Spanish", "fr": "French", "de": "German",
+    "it": "Italian", "pt": "Portuguese", "zh": "Chinese", "ja": "Japanese",
+    "ko": "Korean", "ar": "Arabic", "hi": "Hindi"
+}
+
+DEFAULT_EMBEDDING_MODEL = "sentence-transformers/all-MiniLM-L6-v2"
+DEFAULT_RETRIEVER_K = 3
 
 PROMPT_TEMPLATE = """You are an intelligent assistant helping with enterprise knowledge management,
 specializing in retrieving and explaining organizational knowledge.
