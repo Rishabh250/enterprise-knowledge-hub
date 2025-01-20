@@ -80,7 +80,6 @@ async def process_query(query_body: QueryRequest) -> Dict[str, Any]:
 
         retrieved_docs = process_retrieval({
             "question": query,
-            "language": full_language
         })
 
         context = retrieved_docs.get("context", "")
