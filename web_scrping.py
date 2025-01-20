@@ -17,7 +17,7 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 # Define constants
-DEFAULT_URL = "https://www.linkedin.com/feed/update/urn:li:activity:7286308453000654848/"
+DEFAULT_URL = "https://en.wikipedia.org/wiki/Affairs_Today"
 HEADERS = {
     'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36'
 }
